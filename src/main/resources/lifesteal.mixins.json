@@ -1,9 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.bb1.fabric.template.mixins",
+  "package": "com.bb1.fabric.lifesteal.mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+  	"ServerPlayerEntityMixin"
   ],
   "client": [],
   "injectors": {

@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "template",
+  "id": "lifesteal",
   "version": "${version}",
 
-  "name": "Template Mod",
-  "description": "This is a template mod for BFAPI",
+  "name": "LifeSteal",
+  "description": "An implementation of the LifeSteal SMP",
   "authors": [
     "BradBot_1"
   ],
   "contact": {
     "homepage": "https://github.com/BradBot1/",
-    "sources": "https://github.com/BradBot1/BFAPI-template"
+    "sources": "https://github.com/BradBot1/LifeSteal"
   },
 
   "license": "Apache License v2",
@@ -19,14 +19,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.bb1.fabric.template.Loader"
+      "com.bb1.fabric.lifesteal.Loader"
     ]
   },
   "mixins": [
-    "template.mixins.json"
+    "lifesteal.mixins.json"
   ],
-
-  "accessWidener" : "template.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.11.3",

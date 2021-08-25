@@ -14,10 +14,6 @@ repositories {
 	flatDir { dirs 'libs' } 
 }
 
-minecraft {
-	accessWidener =  file("src/main/resources/template.accesswidener")
-}
- 
 dependencies { 
 	minecraft "com.mojang:minecraft:${project.minecraft_version}" 
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2" 
