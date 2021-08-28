@@ -14,7 +14,7 @@
   },
 
   "license": "Apache License v2",
-  "icon": "assets/template/icon.png",
+  "icon": "assets/lifesteal/icon.png",
 
   "environment": "*",
   "entrypoints": {
