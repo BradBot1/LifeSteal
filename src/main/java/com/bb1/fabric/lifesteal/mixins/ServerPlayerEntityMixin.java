@@ -47,7 +47,7 @@ public abstract class ServerPlayerEntityMixin {
 		final Config config = Loader.getConfig();
 		Loader.incrementDeathsBy(of.getUuid(), by);
 		EntityAttributeInstance health = of.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH); // of.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
-		double value = health.getBaseValue()-(config.healthToLooseOnDeath*Loader.getDeathsOf(of.getUuid()));
+		double value = 20D-(config.healthToLooseOnDeath*Loader.getDeathsOf(of.getUuid()));
 		if (value<config.minHealth) {
 			value = config.minHealth;
 		} else if (config.maxHealth>0 && value>=config.maxHealth) {
