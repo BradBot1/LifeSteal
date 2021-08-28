@@ -14,6 +14,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
@@ -39,6 +40,7 @@ public abstract class ServerPlayerEntityMixin {
 		ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
 		if (Loader.getConfig().banWhenHealthReachesZero && player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).getBaseValue()<=0) {
 			com.bb1.api.Loader.getMinecraftServer().getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, "LifeSteal", null, Loader.getConfig().banReason));
+			player.networkHandler.connection.send(new net.minecraft.network.packet.s2c.play.DisconnectS2CPacket(new LiteralText(Loader.getConfig().banReason)));
 		}
 		updateValueOf(player, 0);
 	}
