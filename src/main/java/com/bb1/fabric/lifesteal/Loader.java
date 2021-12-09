@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.bb1.api.events.Events;
+import com.bb1.fabric.bfapi.GameObjects;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -47,7 +47,8 @@ public class Loader implements ModInitializer {
 				DEATH_MAP.put(UUID.fromString(entry.getKey()), entry.getValue().getAsInt());
 			} catch (Throwable t) { }
 		}
-		Events.GameEvents.STOP_EVENT.register((server)->{
+		GameObjects.GameEvents.SERVER_STOP.addHandler((server)->{
+			CONFIG.load();
 			JsonObject jsonObject = new JsonObject();
 			for (Entry<UUID, Integer> entry : DEATH_MAP.entrySet()) {
 				jsonObject.addProperty(entry.getKey().toString(), entry.getValue());

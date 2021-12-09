@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.bb1.fabric.bfapi.GameObjects;
 import com.bb1.fabric.lifesteal.Config;
 import com.bb1.fabric.lifesteal.Loader;
 
@@ -39,7 +40,7 @@ public abstract class ServerPlayerEntityMixin {
 	public void onSpawnCheckToBan(CallbackInfo callbackInfo) {
 		ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
 		if (Loader.getConfig().banWhenHealthReachesZero && player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).getBaseValue()<=0) {
-			com.bb1.api.Loader.getMinecraftServer().getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, "LifeSteal", null, Loader.getConfig().banReason));
+			GameObjects.getMinecraftServer().getPlayerManager().getUserBanList().add(new BannedPlayerEntry(player.getGameProfile(), null, "LifeSteal", null, Loader.getConfig().banReason));
 			player.networkHandler.connection.send(new net.minecraft.network.packet.s2c.play.DisconnectS2CPacket(new LiteralText(Loader.getConfig().banReason)));
 		}
 		updateValueOf(player, 0);
