@@ -1,10 +1,12 @@
 # LifeSteal Fork
 
-A fabric server and client side implementation of the LifeSteal SMP
+A fabric server or client side implementation of the LifeSteal SMP.
+
+This mod was forked from [BradBot1's](https://github.com/BradBot1/) LifeSteal [Mod](https://github.com/BradBot1/LifeSteal), please make sure to check it out as although there are quite a few changes this mod was heavily based off of his.
 
 ## Required Mods
 
-> This mod is not dependant on any mods
+> This fork is not dependant on any other mods
 
 ## Config
 
@@ -21,5 +23,4 @@ Configuration is purely managed through gamerules, here is a list of gamerules a
 Player Maximum health is now stored via the maximum health attribute making it easy to modify and for other mods to be compatible with as long as they dont actively enfore their own max health values.
 
 ## Links
-
-* [GitHub](https://github.com/ModernAdventurer/LifeSteal/)
+* [My GitHub](https://github.com/ModernAdventurer/LifeSteal/)
