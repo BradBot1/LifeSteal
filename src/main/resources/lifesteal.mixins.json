@@ -1,12 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.bb1.fabric.lifesteal.mixins",
-  "compatibilityLevel": "JAVA_16",
+  "package": "me.modernadventurer.lifesteal.mixin",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
-  	"ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin"
   ],
-  "client": [],
+  "client": [
+  ],
   "injectors": {
     "defaultRequire": 1
   }

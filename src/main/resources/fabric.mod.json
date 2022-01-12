@@ -2,35 +2,27 @@
   "schemaVersion": 1,
   "id": "lifesteal",
   "version": "${version}",
-
-  "name": "LifeSteal",
-  "description": "An implementation of the LifeSteal SMP",
+  "name": "lifesteal",
+  "description": "Configured Keep Inventory Fabric Mod",
   "authors": [
-    "BradBot_1"
+    "ModernAdventurer"
   ],
-  "contact": {
-    "homepage": "https://github.com/BradBot1/",
-    "sources": "https://github.com/BradBot1/LifeSteal"
-  },
-
-  "license": "Apache License v2",
+  "contact": {},
+  "license": "LGPL-3.0",
   "icon": "assets/lifesteal/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.bb1.fabric.lifesteal.Loader"
+      "me.modernadventurer.lifesteal.Loader"
     ]
   },
   "mixins": [
     "lifesteal.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.12.12",
+    "fabric": "*",
     "minecraft": "1.18.x",
-    "java": ">=16",
-    "bfapi": ">=1.2.0"
-  },
-  "suggests": {}
+    "java": ">=16"
+  }
 }
