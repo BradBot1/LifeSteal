@@ -3,7 +3,7 @@
   "id": "lifesteal",
   "version": "${version}",
   "name": "lifesteal",
-  "description": "A fabric server or client side implementation of the LifeSteal SMP",
+  "description": "A fabric server or client side implementation of the LifeSteal SMP.",
   "authors": [
     "ModernAdventurer"
   ],
