@@ -18,6 +18,9 @@ import net.minecraft.world.GameRules;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+//NOTICE: This file was modified to remove all configuration setup and instead establish gamerules
+
 public class Loader implements ModInitializer {
 
 	public static final String MOD_ID = "LifeSteal";

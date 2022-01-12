@@ -1,0 +1,6 @@
+me.modernadventurer.lifesteal.mixin.Loader was modified to
+remove all configuration setup and instead establish gamerules
+
+me.modernadventurer.lifesteal.mixin.ServerPlayerEntity was modified to use gamerules instead
+of the configuration implementation and to use attributes, it also fixes the max health attribute
+being lost on death
