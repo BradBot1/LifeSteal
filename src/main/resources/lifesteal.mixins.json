@@ -4,6 +4,7 @@
   "package": "me.modernadventurer.lifesteal.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "LivingEntityMixin",
     "ServerPlayerEntityMixin"
   ],
   "client": [

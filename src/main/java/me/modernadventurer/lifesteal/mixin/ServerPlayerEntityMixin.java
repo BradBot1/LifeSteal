@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -37,9 +38,9 @@ public abstract class ServerPlayerEntityMixin {
 		int stealAmount = world.getGameRules().getInt(Loader.STEALAMOUNT);
 		if(entity instanceof ServerPlayerEntity) {
 			updateValueOf((ServerPlayerEntity)entity, stealAmount);
-			updateValueOf((ServerPlayerEntity)(Object)this, -stealAmount);
+			updateValueOf(player, -stealAmount);
 		} else if(!world.getGameRules().getBoolean(Loader.PLAYERRELATEDONLY)) {
-			updateValueOf((ServerPlayerEntity)(Object)this, -stealAmount);
+			updateValueOf(player, -stealAmount);
 		}
 	}
 	
@@ -56,17 +57,14 @@ public abstract class ServerPlayerEntityMixin {
 		}
 	}
 	
-	private void updateValueOf(ServerPlayerEntity of, int by) {
-		//System.out.println("update values triggers");
+	private static void updateValueOf(ServerPlayerEntity of, int by) {
 		EntityAttributeInstance health = of.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH);
 		assert health != null;
 		double oldHealth = health.getValue();
-		//System.out.println(oldHealth);
 		float newHealth = (float) (oldHealth + by);
-		//System.out.println(newHealth);
 		int maxHealth = of.getWorld().getGameRules().getInt(Loader.MAXPLAYERHEALTH);
 		if(maxHealth > 0 && newHealth > maxHealth) newHealth = maxHealth;
-		//System.out.println(newHealth);
+		of.setHealth(of.getHealth()+by);
 		health.setBaseValue(newHealth);
 	}
 }

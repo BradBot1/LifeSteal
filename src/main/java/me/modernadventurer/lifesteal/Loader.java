@@ -1,5 +1,8 @@
 package me.modernadventurer.lifesteal;
 
+import me.modernadventurer.lifesteal.block.ModBlocks;
+import me.modernadventurer.lifesteal.item.ModItems;
+import me.modernadventurer.lifesteal.world.features.ModConfiguredFeatures;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
@@ -23,24 +26,27 @@ import net.minecraft.world.GameRules;
 
 public class Loader implements ModInitializer {
 
-	public static final String MOD_ID = "LifeSteal";
+	public static final String MOD_ID = "lifesteal";
 
 	public static final GameRules.Key<GameRules.BooleanRule> PLAYERRELATEDONLY =
-			GameRuleRegistry.register("lifeSteal:playerKillOnly", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true));
+			GameRuleRegistry.register(MOD_ID + ":playerKillOnly", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true));
 
 	public static final GameRules.Key<GameRules.BooleanRule> BANWHENMINHEALTH =
-			GameRuleRegistry.register("lifeSteal:banWhenMinHealth", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true));
+			GameRuleRegistry.register(MOD_ID + ":banWhenMinHealth", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true));
 
 	public static final GameRules.Key<GameRules.IntRule> STEALAMOUNT =
-			GameRuleRegistry.register("lifeSteal:stealAmount", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(2));
+			GameRuleRegistry.register(MOD_ID + ":stealAmount", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(2));
 
 	public static final GameRules.Key<GameRules.IntRule> MINPLAYERHEALTH =
-			GameRuleRegistry.register("lifeSteal:minPlayerHealth", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(1));
+			GameRuleRegistry.register(MOD_ID + ":minPlayerHealth", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(1));
 
 	public static final GameRules.Key<GameRules.IntRule> MAXPLAYERHEALTH =
-			GameRuleRegistry.register("lifeSteal:maxPlayerHealth", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(30));
+			GameRuleRegistry.register(MOD_ID + ":maxPlayerHealth", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(40));
 
 	@Override
 	public void onInitialize() {
+		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
+		ModConfiguredFeatures.registerOres();
 	}
 }
