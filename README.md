@@ -22,4 +22,4 @@ Player Maximum health is now stored via the maximum health attribute making it e
 
 ## Links
 
-* [GitHub](https://https://github.com/ModernAdventurer/LifeSteal/)
+* [GitHub](https://github.com/ModernAdventurer/LifeSteal/)
