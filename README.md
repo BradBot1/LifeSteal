@@ -4,10 +4,6 @@ A fabric server or client side implementation of the LifeSteal SMP.
 
 This mod was forked from [BradBot1's](https://github.com/BradBot1/) LifeSteal [Mod](https://github.com/BradBot1/LifeSteal), please make sure to check it out as although there are quite a few changes this mod was heavily based off of his.
 
-## Required Mods
-
-> This fork is not dependant on any other mods
-
 ## Config
 
 Configuration is purely managed through gamerules, here is a list of gamerules and what they do.

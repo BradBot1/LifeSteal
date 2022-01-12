@@ -1,3 +1,5 @@
+NOTICE OF CHANGES
+
 me.modernadventurer.lifesteal.mixin.Loader was modified to
 remove all configuration setup and instead establish gamerules
 

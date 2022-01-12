@@ -19,7 +19,7 @@ import net.minecraft.world.GameRules;
  * limitations under the License.
  */
 
-//NOTICE: This file was modified to remove all configuration setup and instead establish gamerules
+//NOTICE: This file was modified to remove all configuration setup and instead establish gamerules.
 
 public class Loader implements ModInitializer {
 

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //NOTICE: file was modified to use gamerules instead
 //of the configuration implementation and to use attributes, it also fixes the max health attribute
-//being lost on death
+//being lost on death.
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin {
