@@ -1,38 +1,25 @@
-# LifeSteal
+# LifeSteal Fork
 
-A fabric server side implementation of the LifeSteal SMP
+A fabric server and client side implementation of the LifeSteal SMP
 
 ## Required Mods
 
-> This mod is dependent on [BFAPI](https://github.com/BradBot1/BradsFabricApi)
+> This mod is not dependant on any mods
 
 ## Config
 
-The config is found under `lifesteal.json` in the config directory
+Configuration is purely managed through gamerules, here is a list of gamerules and what they do.
 
-|Field|Type|Description|Default|
+|Gamerule|Type|Description|Default|
 |-----|----|-----------|-------|
-|maxHealth|Double|The max health a player can have (including default health) before lifesteal no longer adds health *If less than or eaual to 0 then this is ignored*|-1|
-|minHealth|Double|The minimum health a player can have (including default health) before lifesteal no longer removes health *Setting to 0 results in the player being able to reach no health (always have this value above 0 if banWhenHealthReachesZero is false)*|0|
-|banWhenHealthReachesZero|Boolean|If the players max health is 0 the player will be banned for the reason given by banReason|true|
-|healthToLooseOnDeath|Double|The amount of health to loose on a death *2 health is one heart*|2|
-|looseHealthOnlyOnPlayerRelatedDeath|Boolean|If true the player can only loose health when the death was caused by another player|true|
-|banReason|String|If banWhenHealthReachesZero is set to true this is the ban reason given to the player|You have been banned due to your health reaching 0!|
+|lifeSteal:playerKillOnly|Boolean|If a player should lose hearts when dying in any way other than to a player|true|
+|lifeSteal:banWhenMinHealth|Boolean|If a player should be banned when they reach the minimum health value|true|
+|lifeSteal:stealAmount|Integer|The amount of health that should be stolen upon death|2|
+|lifeSteal:minPlayerHealth|Integer|The minimum health a player can reach before being banned *if the value is below 1 it is automatically corrected to 1*|1|
+|lifeSteal:maxPlayerHealth|Integer|The maximum health a player can reach *set to a value of 0 or below to disable*|1|
 
-```json
-{
-  "maxHealth": -1.0,
-  "minHealth": 0.0,
-  "banWhenHealthReachesZero": true,
-  "healthToLooseOnDeath": 2.0,
-  "looseHealthOnlyOnPlayerRelatedDeath": true,
-  "banReason": "You have been banned due to your health reaching 0!",
-  "storage": {}
-}
-```
+Player Maximum health is now stored via the maximum health attribute making it easy to modify and for other mods to be compatible with as long as they dont actively enfore their own max health values.
 
 ## Links
 
-* [GitHub](https://github.com/BradBot1/LifeSteal)
-* [ModRinth](https://modrinth.com/mod/lifesteal)
-* [CurseForge](https://www.curseforge.com/minecraft/mc-mods/lifesteal)
+* [GitHub](https://https://github.com/ModernAdventurer/LifeSteal/)
