@@ -2,6 +2,10 @@
 
 A fabric server side implementation of the LifeSteal SMP
 
+## Notice when updating to v2.0.0
+
+There has been alot of changes since v1.2.0 and as a result som of your config options will not be usuable by the mod (*i did some tidying up*)
+
 ## Required Mods
 
 > This mod is dependent on [BFAPI](https://github.com/BradBot1/BradsFabricApi)
@@ -36,3 +40,9 @@ The config is found under `lifesteal.json` in the config directory
 * [GitHub](https://github.com/BradBot1/LifeSteal)
 * [ModRinth](https://modrinth.com/mod/lifesteal)
 * [CurseForge](https://www.curseforge.com/minecraft/mc-mods/lifesteal)
+
+## Api utilisation
+
+This mod adds a simple interface for using it as an API, `LifeStealable`
+
+`LifeStealable` allows for a mod to get a players lost health and modify it as needed while also allowing it to be implemented on custom entities so that they can be used to gain health on death

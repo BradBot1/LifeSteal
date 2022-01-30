@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
 import com.bb1.fabric.bfapi.GameObjects;
@@ -32,29 +33,37 @@ public class Loader implements ModInitializer {
 	
 	public static final @NotNull Config getConfig() { return CONFIG; }
 	
-	private static final Map<UUID, Integer> DEATH_MAP = new HashMap<UUID, Integer>();
+	@Deprecated
+	private static final Map<UUID, Integer> DEATH_MAP = new HashMap<UUID, Integer>(); // ONLY TO BE USED TO LOAD OLD DATA
 	
-	public static final int getDeathsOf(UUID of) { return DEATH_MAP.getOrDefault(of, 0); }
+	@Internal
+	public static final Integer getOldDataFor(@NotNull UUID uuid) {
+		Integer value = DEATH_MAP.containsKey(uuid) ? DEATH_MAP.get(uuid) : null;
+		DEATH_MAP.remove(uuid);
+		return value;
+	}
 	
-	public static final void incrementDeathsBy(UUID of, int amount) { DEATH_MAP.put(of, (DEATH_MAP.getOrDefault(of, 0)+amount)); }
-	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onInitialize() {
 		CONFIG.load();
 		CONFIG.save();
-		for (Entry<String, JsonElement> entry : CONFIG.storage.entrySet()) {
-			try {
-				DEATH_MAP.put(UUID.fromString(entry.getKey()), entry.getValue().getAsInt());
-			} catch (Throwable t) { }
+		if (CONFIG.storage!=null) {
+			for (Entry<String, JsonElement> entry : CONFIG.storage.entrySet()) {
+				try {
+					DEATH_MAP.put(UUID.fromString(entry.getKey()), entry.getValue().getAsInt());
+				} catch (Throwable t) { }
+			}
 		}
 		GameObjects.GameEvents.SERVER_STOP.addHandler((server)->{
-			CONFIG.load();
-			JsonObject jsonObject = new JsonObject();
-			for (Entry<UUID, Integer> entry : DEATH_MAP.entrySet()) {
-				jsonObject.addProperty(entry.getKey().toString(), entry.getValue());
+			if (!DEATH_MAP.isEmpty()) {
+				JsonObject jsonObject = new JsonObject();
+				for (Entry<UUID, Integer> entry : DEATH_MAP.entrySet()) {
+					jsonObject.addProperty(entry.getKey().toString(), entry.getValue());
+				}
+				CONFIG.storage = jsonObject;
+				CONFIG.save();
 			}
-			CONFIG.storage = jsonObject;
-			CONFIG.save();
 		});
 	}
 
