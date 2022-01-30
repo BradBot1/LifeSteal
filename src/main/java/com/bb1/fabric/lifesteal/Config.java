@@ -1,12 +1,17 @@
 package com.bb1.fabric.lifesteal;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 import com.bb1.fabric.bfapi.Constants;
 import com.bb1.fabric.bfapi.config.ConfigComment;
 import com.bb1.fabric.bfapi.config.ConfigSub;
+import com.bb1.fabric.bfapi.permissions.Permission;
+import com.bb1.fabric.bfapi.permissions.PermissionLevel;
 import com.google.gson.JsonObject;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 /**
@@ -48,7 +53,27 @@ public class Config extends com.bb1.fabric.bfapi.config.Config {
 	public Text notEnoughHeartsMessage = new LiteralText("The player did not have any hearts you could steal");
 	
 	@ConfigComment("Do not modify this! You can/should use the ingame command to modify a players health, this is used to store changes about a player while they are offline")
-	@Deprecated
+	@Internal
 	public JsonObject storage = null;
+	
+	@ConfigComment("The aliases that the command will register under")
+	@ConfigSub("command")
+	public String[] aliases = { "lifesteal",  "ls" };
+	
+	@ConfigComment("The permission required to modify a players health *if you dont have a permission db the level can be set to the wanted operator level*")
+	@ConfigSub("command")
+	public Permission permission = new Permission("lifesteal.modify", PermissionLevel.OP_3);
+	
+	@ConfigComment("The text sent to the player when they set another players health")
+	@ConfigSub("command")
+	public Text successMessage = new LiteralText("Done!").formatted(Formatting.GREEN);
+	
+	@ConfigComment("The text sent to the player when they set another players health but they are not online so it stored it to be applied when the player joins")
+	@ConfigSub("command")
+	public Text successMessageFile = new LiteralText("Done! (to file)").formatted(Formatting.GREEN);
+	
+	@ConfigComment("If setting a players health should be broadcasted to all operators")
+	@ConfigSub("command")
+	public boolean broadcastToOps = true;
 	
 }
