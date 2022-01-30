@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.bb1.fabric.bfapi.GameObjects;
+import com.bb1.fabric.bfapi.nbt.mark.INbtMarkListener;
+import com.bb1.fabric.bfapi.recipe.AbstractRecipe;
+import com.bb1.fabric.bfapi.recipe.IRecipeRequirement;
+import com.bb1.fabric.bfapi.recipe.IRecipeResult;
+import com.bb1.fabric.bfapi.utils.Field;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -18,12 +23,17 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * Copyright 2021 BradBot_1
@@ -58,36 +68,38 @@ public class Loader implements ModInitializer {
 	public void onInitialize() {
 		CONFIG.load();
 		CONFIG.save();
-		GameObjects.GameEvents.COMMAND_REGISTRATION.addHandler((i)->{
-			LiteralArgumentBuilder<ServerCommandSource> set = CommandManager.literal("set").then(CommandManager.argument("uuid", UuidArgumentType.uuid()).then(CommandManager.argument("amount", DoubleArgumentType.doubleArg()).executes((s)->{
-				final UUID uuid = UuidArgumentType.getUuid(s, "uuid");
-				final double amount = DoubleArgumentType.getDouble(s, "amount");
-				@Nullable ServerPlayerEntity player = GameObjects.getMinecraftServer().getPlayerManager().getPlayer(uuid);
-				if (player!=null) { // they are online
-					LifeStealable.getLifeStealable(player).setLostHealth(amount);
+		if (CONFIG.enableCommands) {
+			GameObjects.GameEvents.COMMAND_REGISTRATION.addHandler((i)->{
+				LiteralArgumentBuilder<ServerCommandSource> set = CommandManager.literal("set").then(CommandManager.argument("uuid", UuidArgumentType.uuid()).then(CommandManager.argument("amount", DoubleArgumentType.doubleArg()).executes((s)->{
+					final UUID uuid = UuidArgumentType.getUuid(s, "uuid");
+					final double amount = DoubleArgumentType.getDouble(s, "amount");
+					@Nullable ServerPlayerEntity player = GameObjects.getMinecraftServer().getPlayerManager().getPlayer(uuid);
+					if (player!=null) { // they are online
+						LifeStealable.getLifeStealable(player).setLostHealth(amount);
+						final Config conf = Loader.getConfig();
+						s.getSource().sendFeedback(conf.successMessage, conf.broadcastToOps);
+						return 1;
+					}
+					DEATH_MAP.put(uuid, (int) amount);
+					final Config conf = Loader.getConfig();
+					s.getSource().sendFeedback(conf.successMessageFile, conf.broadcastToOps);
+					return 1;
+				}))).then(CommandManager.argument("player", EntityArgumentType.player()).then(CommandManager.argument("amount", DoubleArgumentType.doubleArg()).executes((s)->{
+					LifeStealable.getLifeStealable(EntityArgumentType.getPlayer(s, "player")).setLostHealth(DoubleArgumentType.getDouble(s, "amount"));
 					final Config conf = Loader.getConfig();
 					s.getSource().sendFeedback(conf.successMessage, conf.broadcastToOps);
 					return 1;
+				})));
+				LiteralArgumentBuilder<ServerCommandSource> get = CommandManager.literal("get").then(CommandManager.argument("player", EntityArgumentType.player()).executes((s)->{
+					final ServerPlayerEntity player = EntityArgumentType.getPlayer(s, "player");
+					s.getSource().sendFeedback(((MutableText)player.getDisplayName()).append(new LiteralText(" has lost ").formatted(Formatting.RESET).append(new LiteralText("" + LifeStealable.getLifeStealable(player).getLostHealth()).formatted(Formatting.RED).append(new LiteralText(" health").formatted(Formatting.RESET)))), Loader.getConfig().broadcastToOps);
+					return 1;
+				}));
+				for (String aliases : CONFIG.aliases) {
+					i.get().register(CommandManager.literal(aliases).then(set).then(get));
 				}
-				DEATH_MAP.put(uuid, (int) amount);
-				final Config conf = Loader.getConfig();
-				s.getSource().sendFeedback(conf.successMessageFile, conf.broadcastToOps);
-				return 1;
-			}))).then(CommandManager.argument("player", EntityArgumentType.player()).then(CommandManager.argument("amount", DoubleArgumentType.doubleArg()).executes((s)->{
-				LifeStealable.getLifeStealable(EntityArgumentType.getPlayer(s, "player")).setLostHealth(DoubleArgumentType.getDouble(s, "amount"));
-				final Config conf = Loader.getConfig();
-				s.getSource().sendFeedback(conf.successMessage, conf.broadcastToOps);
-				return 1;
-			})));
-			LiteralArgumentBuilder<ServerCommandSource> get = CommandManager.literal("get").then(CommandManager.argument("player", EntityArgumentType.player()).executes((s)->{
-				final ServerPlayerEntity player = EntityArgumentType.getPlayer(s, "player");
-				s.getSource().sendFeedback(((MutableText)player.getDisplayName()).append(new LiteralText(" has lost ").formatted(Formatting.RESET).append(new LiteralText("" + LifeStealable.getLifeStealable(player).getLostHealth()).formatted(Formatting.RED).append(new LiteralText(" health").formatted(Formatting.RESET)))), Loader.getConfig().broadcastToOps);
-				return 1;
-			}));
-			for (String aliases : CONFIG.aliases) {
-				i.get().register(CommandManager.literal(aliases).then(set).then(get));
-			}
-		});
+			});
+		}
 		if (CONFIG.storage!=null) {
 			for (Entry<String, JsonElement> entry : CONFIG.storage.entrySet()) {
 				try {
@@ -105,6 +117,155 @@ public class Loader implements ModInitializer {
 				CONFIG.save();
 			}
 		});
+		if (CONFIG.registerRequirements) {
+			AbstractRecipe.addRequirementBuilder("losthealth>", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeRequirement() {
+					
+					@Override
+					public boolean canCraft(Field<Entity> arg0) {
+						return arg0.getObject() instanceof LifeStealable ls ? ls.getLostHealth() >= amount: false;
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("losthealth>", amount);
+						return arg0;
+					}
+				};
+			});
+			AbstractRecipe.addRequirementBuilder("losthealth<", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeRequirement() {
+					
+					@Override
+					public boolean canCraft(Field<Entity> arg0) {
+						return arg0.getObject() instanceof LifeStealable ls ? ls.getLostHealth() <= amount: false;
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("losthealth<", amount);
+						return arg0;
+					}
+				};
+			});
+			AbstractRecipe.addRequirementBuilder("losthealth=", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeRequirement() {
+					
+					@Override
+					public boolean canCraft(Field<Entity> arg0) {
+						return arg0.getObject() instanceof LifeStealable ls ? ls.getLostHealth() == amount: false;
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("losthealth=", amount);
+						return arg0;
+					}
+				};
+			});
+		}
+		if (CONFIG.registerResults) {
+			AbstractRecipe.addResultBuilder("gainhealth", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeResult() {
+					
+					@Override
+					public void onCraft(Field<Entity> arg0) {
+						if (arg0.getObject() instanceof LifeStealable ls) {
+							ls.gainHealth(amount);
+						}
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("gainhealth", amount);
+						return arg0;
+					}
+					
+				};
+			});
+			AbstractRecipe.addResultBuilder("loosehealth", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeResult() {
+					
+					@Override
+					public void onCraft(Field<Entity> arg0) {
+						if (arg0.getObject() instanceof LifeStealable ls) {
+							ls.looseHealth(amount);
+						}
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("loosehealth", amount);
+						return arg0;
+					}
+					
+				};
+			});
+			AbstractRecipe.addResultBuilder("sethealth", (js)->{
+				final double amount = js.getAsDouble();
+				return new IRecipeResult() {
+					
+					@Override
+					public void onCraft(Field<Entity> arg0) {
+						if (arg0.getObject() instanceof LifeStealable ls) {
+							ls.setLostHealth(amount);
+						}
+					}
+					
+					@Override
+					public JsonObject addToObject(JsonObject arg0) {
+						arg0.addProperty("sethealth", amount);
+						return arg0;
+					}
+					
+				};
+			});
+		}
+		if (CONFIG.allowCraftingOfHealth) { // set up recipe
+			CONFIG.recipe.register(new Identifier("lifesteal", "health"));
+		}
+		if (CONFIG.enableMarks) {
+			int counter = 0;
+			for (String mark : CONFIG.marks) {
+				new INbtMarkListener() {
+
+					@Override
+					public @NotNull String getMark() {
+						return mark;
+					}
+
+					@Override
+					public boolean onArmourUsed(ItemStack arg0, World arg1, @Nullable BlockPos arg2, Field<Entity> arg3,boolean arg4) {
+						return false;
+					}
+
+					@Override
+					public boolean onEntityHit(Field<Entity> arg0, @Nullable World arg1, @Nullable Field<Entity> arg2, @Nullable ItemStack arg3, boolean arg4) {
+						return false;
+					}
+
+					@Override
+					public boolean onItemUse(ItemStack arg0, World arg1, @Nullable BlockPos arg2, Field<Entity> arg3, boolean arg4) {
+						if (arg3.getObject() instanceof LifeStealable ls) {
+							if (CONFIG.limiter < 1 || ls.getLostHealth() < -(ls.getHealthToBeStolenOnDeath() * CONFIG.limiter)) {
+								arg0.decrement(1);
+								ls.gainHealth(ls.getHealthToBeStolenOnDeath());
+								arg3.getObject().getCommandSource().sendFeedback(CONFIG.markOutputSuccess, CONFIG.broadcastToOpsMarks);
+							} else {
+								arg3.getObject().getCommandSource().sendFeedback(CONFIG.markOutputFailed, CONFIG.broadcastToOpsMarks);
+							}
+						}
+						return true;
+					}
+					
+				}.register(new Identifier("lifesteal", "health"+(counter++)));
+			}
+		}
 	}
 
 }

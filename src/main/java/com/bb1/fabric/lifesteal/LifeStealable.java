@@ -18,8 +18,8 @@ public interface LifeStealable {
 		this.setLostHealth(this.getLostHealth() + amountToLose);
 	}
 	
-	public default void gainHealth(double amountToLose) {
-		this.setLostHealth(this.getLostHealth() - amountToLose);
+	public default void gainHealth(double amountToGain) {
+		this.setLostHealth(this.getLostHealth() - amountToGain);
 	}
 	
 	public default void transfer(LifeStealable ls, double amount) {
