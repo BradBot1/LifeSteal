@@ -71,7 +71,7 @@ public abstract class ServerPlayerEntityMixin implements LifeStealable {
 	
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void onSaveAddDataLifeSteal(NbtCompound nbt, CallbackInfo callbackInfo) {
-		nbt.putDouble(SAVE_IDENTIFIER, this._healthLoss);
+		nbt.putDouble("LostHealth", this._healthLoss);
 	}
 	
 	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
@@ -81,7 +81,7 @@ public abstract class ServerPlayerEntityMixin implements LifeStealable {
 			this._healthLoss = (double) oldAmount;
 			return;
 		}
-		this._healthLoss = ExceptionWrapper.executeWithReturn((Void) null, 0d, (n)->nbt.getDouble(SAVE_IDENTIFIER.toString()));
+		this._healthLoss = ExceptionWrapper.executeWithReturn((Void) null, 0d, (n)->nbt.getDouble("LostHealth"));
 	}
 	
 	@Inject(method = "copyFrom", at = @At("TAIL"))

@@ -4,8 +4,6 @@ import com.bb1.fabric.bfapi.utils.ExceptionWrapper;
 
 public interface LifeStealable {
 	
-	public static final String SAVE_IDENTIFIER = "LostHealth";
-	
 	public static LifeStealable getLifeStealable(Object input) {
 		return ExceptionWrapper.executeWithReturn(input, (i)->(LifeStealable)i);
 	}

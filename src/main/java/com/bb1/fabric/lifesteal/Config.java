@@ -12,8 +12,9 @@ import com.bb1.fabric.bfapi.permissions.PermissionLevel;
 import com.bb1.fabric.bfapi.recipe.AbstractRecipe;
 import com.bb1.fabric.bfapi.recipe.ShapelessCraftingRecipe;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -92,13 +93,13 @@ public class Config extends com.bb1.fabric.bfapi.config.Config {
 	
 	@ConfigComment("The recipe that will be used by default, you can disable this with allowCraftingOfHealth being set to false")
 	@ConfigSub("recipe")
-	public AbstractRecipe recipe = new ShapelessCraftingRecipe(buildDefaultResult(), null, Items.TOTEM_OF_UNDYING, Items.POISONOUS_POTATO, Items.HONEY_BOTTLE, Items.DRAGON_BREATH);
-	
-	private final ItemStack buildDefaultResult() {
-		ItemStack is = Items.APPLE.getDefaultStack().setCustomName(new LiteralText("Health"));
-		Markable.getMarkable(is).applyMark("lifesteal");
-		return is;
-	}
+	public AbstractRecipe recipe = new ShapelessCraftingRecipe(Items.APPLE.getDefaultStack().setCustomName(new LiteralText("Health")), null, Items.TOTEM_OF_UNDYING, new Item[] { Items.POISONOUS_POTATO, Items.HONEY_BOTTLE, Items.DRAGON_BREATH } ) {{
+			
+			Markable.getMarkable(getResultIcon()).applyMark("lifesteal");
+			addRequirement(AbstractRecipe.buildRequirement("xp", new JsonPrimitive(5)));
+			addResult(AbstractRecipe.buildResult("xp", new JsonPrimitive(-5)));
+			
+	}};
 	
 	@ConfigComment("Don't disable this unless you have a conflicting error, other mods recipes may depend on it")
 	@ConfigSub("recipe")
