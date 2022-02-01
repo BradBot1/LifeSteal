@@ -11,12 +11,17 @@ import org.jetbrains.annotations.Nullable;
 
 import com.bb1.fabric.bfapi.GameObjects;
 import com.bb1.fabric.bfapi.nbt.mark.INbtMarkListener;
+import com.bb1.fabric.bfapi.nbt.mark.Markable;
+import com.bb1.fabric.bfapi.permissions.PermissionUtils;
 import com.bb1.fabric.bfapi.recipe.AbstractRecipe;
 import com.bb1.fabric.bfapi.recipe.IRecipeRequirement;
 import com.bb1.fabric.bfapi.recipe.IRecipeResult;
+import com.bb1.fabric.bfapi.recipe.RecipeLoader;
+import com.bb1.fabric.bfapi.recipe.ShapelessCraftingRecipe;
 import com.bb1.fabric.bfapi.utils.Field;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -25,6 +30,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,6 +75,7 @@ public class Loader implements ModInitializer {
 		CONFIG.load();
 		CONFIG.save();
 		if (CONFIG.enableCommands) {
+			CONFIG.permission.register();
 			GameObjects.GameEvents.COMMAND_REGISTRATION.addHandler((i)->{
 				LiteralArgumentBuilder<ServerCommandSource> set = CommandManager.literal("set").then(CommandManager.argument("uuid", UuidArgumentType.uuid()).then(CommandManager.argument("amount", DoubleArgumentType.doubleArg()).executes((s)->{
 					final UUID uuid = UuidArgumentType.getUuid(s, "uuid");
@@ -96,7 +103,7 @@ public class Loader implements ModInitializer {
 					return 1;
 				}));
 				for (String aliases : CONFIG.aliases) {
-					i.get().register(CommandManager.literal(aliases).then(set).then(get));
+					i.get().register(CommandManager.literal(aliases).requires((s)->s.getEntity()==null||PermissionUtils.hasPermission(Field.of(s.getEntity()), CONFIG.permission.node())).then(set).then(get));
 				}
 			});
 		}
@@ -226,8 +233,13 @@ public class Loader implements ModInitializer {
 				};
 			});
 		}
-		if (CONFIG.allowCraftingOfHealth) { // set up recipe
-			CONFIG.recipe.register(new Identifier("lifesteal", "health"));
+		if (CONFIG.allowCraftingOfHealth) { // set up recipes
+			ItemStack is = Items.APPLE.getDefaultStack().setCustomName(new LiteralText("Health").formatted(Formatting.RED));
+			Markable.getMarkable(is).applyMark("lifesteal");
+			AbstractRecipe recipe = new ShapelessCraftingRecipe(is, null, Items.TOTEM_OF_UNDYING, Items.POISONOUS_POTATO, Items.BLAZE_ROD, Items.DRAGON_BREATH);
+			recipe.addRequirement(AbstractRecipe.buildRequirement("xp", new JsonPrimitive(5)));
+			recipe.addResult(AbstractRecipe.buildResult("xp", new JsonPrimitive(-5)));
+			RecipeLoader.addDefaultRecipe(new Identifier("lifesteal", "health"), recipe);
 		}
 		if (CONFIG.enableMarks) {
 			int counter = 0;
@@ -263,7 +275,7 @@ public class Loader implements ModInitializer {
 						return true;
 					}
 					
-				}.register(new Identifier("lifesteal", "health"+(counter++)));
+				}.register(new Identifier("lifesteal", "health"+Integer.toString(counter++)));
 			}
 		}
 	}

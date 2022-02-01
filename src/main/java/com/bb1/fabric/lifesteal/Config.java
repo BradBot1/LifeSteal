@@ -5,17 +5,12 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import com.bb1.fabric.bfapi.Constants;
 import com.bb1.fabric.bfapi.config.ConfigComment;
 import com.bb1.fabric.bfapi.config.ConfigName;
+import com.bb1.fabric.bfapi.config.ConfigNullable;
 import com.bb1.fabric.bfapi.config.ConfigSub;
-import com.bb1.fabric.bfapi.nbt.mark.Markable;
 import com.bb1.fabric.bfapi.permissions.Permission;
 import com.bb1.fabric.bfapi.permissions.PermissionLevel;
-import com.bb1.fabric.bfapi.recipe.AbstractRecipe;
-import com.bb1.fabric.bfapi.recipe.ShapelessCraftingRecipe;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -61,6 +56,7 @@ public class Config extends com.bb1.fabric.bfapi.config.Config {
 	
 	@ConfigComment("Do not modify this! You can/should use the ingame command to modify a players health, this is used to store changes about a player while they are offline")
 	@Internal
+	@ConfigNullable
 	public JsonObject storage = null;
 	
 	@ConfigComment("If the commands should be registered")
@@ -87,19 +83,9 @@ public class Config extends com.bb1.fabric.bfapi.config.Config {
 	@ConfigSub("command")
 	public boolean broadcastToOps = true;
 	
-	@ConfigComment("If custom recipe stuff should be enabled")
+	@ConfigComment("If the default recipe should be registered if a custom one is not found under lifesteal:health")
 	@ConfigSub("recipe")
 	public boolean allowCraftingOfHealth = true;
-	
-	@ConfigComment("The recipe that will be used by default, you can disable this with allowCraftingOfHealth being set to false")
-	@ConfigSub("recipe")
-	public AbstractRecipe recipe = new ShapelessCraftingRecipe(Items.APPLE.getDefaultStack().setCustomName(new LiteralText("Health")), null, Items.TOTEM_OF_UNDYING, new Item[] { Items.POISONOUS_POTATO, Items.HONEY_BOTTLE, Items.DRAGON_BREATH } ) {{
-			
-			Markable.getMarkable(getResultIcon()).applyMark("lifesteal");
-			addRequirement(AbstractRecipe.buildRequirement("xp", new JsonPrimitive(5)));
-			addResult(AbstractRecipe.buildResult("xp", new JsonPrimitive(-5)));
-			
-	}};
 	
 	@ConfigComment("Don't disable this unless you have a conflicting error, other mods recipes may depend on it")
 	@ConfigSub("recipe")

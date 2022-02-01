@@ -30,7 +30,7 @@
     "fabricloader": ">=0.11.3",
     "minecraft": "1.18.x",
     "java": ">=16",
-    "bfapi": ">=1.2.0"
+    "bfapi": ">=1.3.0"
   },
   "suggests": {}
 }

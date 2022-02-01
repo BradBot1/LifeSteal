@@ -42,7 +42,7 @@ public abstract class ServerPlayerEntityMixin implements LifeStealable {
 		final Entity entity = source.getAttacker();
 		final Config conf = Loader.getConfig();
 		final double transferAmount = this.getHealthToBeStolenOnDeath();
-		if (conf.minHealth >= 0 && (20D - (this._healthLoss + transferAmount)) <= conf.minHealth) {
+		if (conf.minHealth >= 0 && (20D - (this._healthLoss + transferAmount)) < conf.minHealth) {
 			entity.getCommandSource().sendFeedback(conf.notEnoughHeartsMessage, false);
 			return; // too expensive
 		}
